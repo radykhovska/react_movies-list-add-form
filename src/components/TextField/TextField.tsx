@@ -21,13 +21,16 @@ export const TextField: React.FC<Props> = ({
   placeholder = `Enter ${label}`,
   required = false,
   onChange = () => {},
+  pattern,
 }) => {
   // generate a unique id once on component load
   const [id] = useState(() => `${name}-${getRandomDigits()}`);
 
   // To show errors only if the field was touched (onBlur)
   const [touched, setTouched] = useState(false);
-  const hasError = touched && required && !value;
+  const hasRequiredError = touched && required && !value;
+  const hasRegexError = pattern != `` && value && !value.match(pattern);
+  const hasError = hasRequiredError || hasRegexError;
 
   return (
     <div className="field">
@@ -45,12 +48,17 @@ export const TextField: React.FC<Props> = ({
           })}
           placeholder={placeholder}
           value={value}
-          onChange={event => onChange(event.target.value)}
+          onChange={event => onChange(event.target.value.trim())}
           onBlur={() => setTouched(true)}
         />
       </div>
 
-      {hasError && <p className="help is-danger">{`${label} is required`}</p>}
+      {hasRequiredError && (
+        <p className="help is-danger">{`${label} is required`}</p>
+      )}
+      {hasRegexError && (
+        <p className="help is-danger">{`${label} is not correct`}</p>
+      )}
     </div>
   );
 };
