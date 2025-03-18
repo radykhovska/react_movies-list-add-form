@@ -25,30 +25,34 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
   }
 
   const submitButtonDisabled =
-    title === '' ||
-    imgUrl === '' ||
-    imdbUrl === '' ||
-    imdbId === '' ||
+    title.trim().length <= 0 ||
+    imgUrl.trim().length <= 0 ||
+    imdbUrl.trim().length <= 0 ||
+    imdbId.trim().length <= 0 ||
     isNotValidUrl(imgUrl) ||
     isNotValidUrl(imdbUrl);
 
-  function handleOnSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const newMovie: Movie = {
-      title,
-      description,
-      imgUrl,
-      imdbUrl,
-      imdbId,
-    };
-
-    onAdd(newMovie);
+  function resetFormFields() {
     setMovieTitle('');
     setDescription('');
     setImgUrl('');
     setImdbUrl('');
     setImdbId('');
+  }
+
+  function handleOnSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const newMovie: Movie = {
+      title: title.trim(),
+      description: description.trim(),
+      imgUrl: imgUrl.trim(),
+      imdbUrl: imdbUrl.trim(),
+      imdbId: imdbId.trim(),
+    };
+
+    onAdd(newMovie);
+    resetFormFields();
     setCount(current => current + 1);
   }
 
@@ -76,7 +80,7 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
         label="Image URL"
         value={imgUrl}
         onChange={setImgUrl}
-        pattern={urlPattern}
+        isNotValidUrl={isNotValidUrl(imgUrl)}
         required
       />
 
@@ -85,7 +89,7 @@ export const NewMovie: React.FC<Props> = ({ onAdd }) => {
         label="Imdb URL"
         value={imdbUrl}
         onChange={setImdbUrl}
-        pattern={urlPattern}
+        isNotValidUrl={isNotValidUrl(imdbUrl)}
         required
       />
 
